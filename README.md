@@ -1,4 +1,4 @@
-# Block File Types (Chrome Extension)
+# Managed Files (Chrome Extension)
 
 ## 📌 Overview
 
