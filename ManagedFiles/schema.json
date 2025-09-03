@@ -1,0 +1,13 @@
+{
+  "type": "object",
+  "properties": {
+    "blocktypes": {
+      "title": "Blocked File Types",
+      "description": "List of file extensions to block (e.g. html, js, pdf).",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
