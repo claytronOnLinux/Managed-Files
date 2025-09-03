@@ -1,6 +1,6 @@
-#Block File Types (Chrome Extension)
+# Block File Types (Chrome Extension)
 
-📌 Overview
+## 📌 Overview
 
 
 Block File Types is a lightweight Chrome extension that prevents users from opening specific local file types (e.g., .html, .js, .pdf) directly in the browser.
@@ -12,7 +12,7 @@ Configuration is managed centrally via the Google Admin Console using JSON polic
 
 ---
 
-✨ Features
+## ✨ Features
 
 - 🔒 Policy‑driven — Admins define blocked file types via Chrome Enterprise policies.
 
@@ -27,7 +27,7 @@ Configuration is managed centrally via the Google Admin Console using JSON polic
 
 ---
 
-📂 File Structure
+## 📂 File Structure
 
 	block-file-types/
 	  ├── manifest.json   # Extension manifest (v3)
@@ -39,7 +39,7 @@ Configuration is managed centrally via the Google Admin Console using JSON polic
 
 ---
 
-⚙️ Configuration (Admin Console)
+## ⚙️ Configuration (Admin Console)
 
 1. Upload or publish the extension (private or internal).
 
@@ -58,7 +58,7 @@ This will block attempts to open .html and .js files directly in Chrome (via fil
 
 ---
 
-🔧 Development & Testing
+## 🔧 Development & Testing
 
 Load Unpacked
 
@@ -78,7 +78,7 @@ To deploy outside of the Web Store, package the extension into a .crx and distri
 
 ---
 
-🔒 Privacy & Data Usage
+## 🔒 Privacy & Data Usage
 
 - This extension does not collect, store, or transmit any personal data.
 
@@ -91,7 +91,7 @@ To deploy outside of the Web Store, package the extension into a .crx and distri
 
 ---
 
-📜 License
+## 📜 License
 
 
 MIT License — feel free to use, modify, and deploy in your own environment.
