@@ -9,7 +9,7 @@ This extension is designed for enterprise and school environments where administ
 
 Configuration is managed centrally via the Google Admin Console using JSON policies.
 
-[Chrome Extension](https://chromewebstore.google.com/detail/managed-files/bfbdggpicmioahjkhbcjcbakjohjongi?authuser=0&hl=en)
+[Install the Chrome extension here!](https://chromewebstore.google.com/detail/managed-files/bfbdggpicmioahjkhbcjcbakjohjongi?authuser=0&hl=en)
 
 
 ---
