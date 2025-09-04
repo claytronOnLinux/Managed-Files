@@ -1,20 +1,20 @@
-# Managed Files (Chrome Extension)
+Managed Files (Chrome Extension)
 
-## 📌 Overview
+📌 Overview
 
 
-Block File Types is a lightweight Chrome extension that prevents users from opening specific local file types (e.g., .html, .js, .pdf) directly in the browser.
+Managed Files is a lightweight Chrome extension that prevents users from opening specific local file types (e.g., .html, .js, .pdf) directly in the browser via file:// URLs.
 
-This extension is designed for enterprise and school environments where administrators need to restrict access to certain file types for security or policy reasons.
+This extension is designed for enterprise and school environments where administrators need to restrict access to certain file types for security, compliance, or policy reasons.
 
 Configuration is managed centrally via the Google Admin Console using JSON policies.
 
-[Install the Chrome extension here!](https://chromewebstore.google.com/detail/managed-files/bfbdggpicmioahjkhbcjcbakjohjongi?authuser=0&hl=en)
+👉 Install the Chrome extension here!
 
 
 ---
 
-## ✨ Features
+✨ Features
 
 - 🔒 Policy‑driven — Admins define blocked file types via Chrome Enterprise policies.
 
@@ -26,22 +26,35 @@ Configuration is managed centrally via the Google Admin Console using JSON polic
 
 - ✅ Safe for websites — Only blocks file:// navigations, does not block JavaScript or resources loaded by websites.
 
+- 🖥️ Custom Block Page — Friendly, modern UI with optional redirect to an admin‑defined URL.
 
----
+- 📞 Popup Menu — Toolbar button with a configurable “Contact IT Support” link.
 
-## 📂 File Structure
+- 📑 Password‑Protected Logs — Admins can review blocked attempts (file type, path, timestamp) after entering a configured password.
 
-	block-file-types/
-	  ├── manifest.json   # Extension manifest (v3)
-	  ├── background.js   # Service worker that applies blocking rules
-	  ├── schema.json     # Policy schema for Admin Console
-	  ├── icon128.png     # Extension icon
-	  └── README.md       # This file
+- 📥 Export Logs — IT can download logs as JSON for troubleshooting or compliance.
 
 
 ---
 
-## ⚙️ Configuration (Admin Console)
+📂 File Structure
+
+	managed-files/
+	  ├── manifest.json    # Extension manifest (v3)
+	  ├── background.js    # Service worker that applies blocking rules
+	  ├── schema.json      # Policy schema for Admin Console
+	  ├── popup.html       # Toolbar popup UI
+	  ├── popup.js         # Popup logic (support + logs access)
+	  ├── blocked.html     # Friendly block page
+	  ├── logs.html        # Admin log viewer
+	  ├── logs.js          # Logic for displaying/exporting logs
+	  ├── icon128.png      # Extension icon
+	  └── README.md        # This file
+
+
+---
+
+⚙️ Configuration (Admin Console)
 
 1. Upload or publish the extension (private or internal).
 
@@ -52,15 +65,25 @@ Configuration is managed centrally via the Google Admin Console using JSON polic
 Example Policy
 
 	{
-	  "blocktypes": ["html", "js"]
+	  "blocktypes": ["html", "js", "pdf"],
+	  "redirectUrl": "https://intranet.company.com/blocked",
+	  "supportUrl": "https://helpdesk.company.com/ticket",
+	  "logsPassword": "SuperSecret123"
 	}
 
-This will block attempts to open .html and .js files directly in Chrome (via file:// URLs).
+
+- blocktypes → List of file extensions to block (file:// only).
+
+- redirectUrl → Optional URL to redirect blocked attempts (defaults to local blocked.html).
+
+- supportUrl → URL opened when the user clicks “Contact IT Support” in the popup.
+
+- logsPassword → Password required to view logs in the extension.
 
 
 ---
 
-## 🔧 Development & Testing
+🔧 Development & Testing
 
 Load Unpacked
 
@@ -68,36 +91,43 @@ Load Unpacked
 
 2. Enable Developer mode.
 
-3. Click Load unpacked and select the block-file-types/ folder.
+3. Click Load unpacked and select the managed-files/ folder.
 
-4. Test by opening a local .html or .js file in Chrome — it should be blocked.
+4. Enable “Allow access to file URLs” in the extension settings.
 
-Packaging
+5. Test by opening a local .html or .js file in Chrome — it should be blocked.
+
+Simulating Admin Policy Locally
+
+- Place a JSON file named after your extension ID in Chrome’s managed policy folder (varies by OS).
+
+- Example (Windows):
+
+	C:\Program Files\Google\Chrome\Policies\Managed\ibikmgedadoagbbjdgfapgogkkikggka.json
 
 
-To deploy outside of the Web Store, package the extension into a .crx and distribute via Admin Console.
+
+- Restart Chrome and check chrome://policy to confirm it loaded.
 
 
 ---
 
-## 🔒 Privacy & Data Usage
+🔒 Privacy & Data Usage
 
-- This extension does not collect, store, or transmit any personal data.
+- This extension does not collect, store, or transmit any personal data externally.
 
 - All configuration is handled locally via Chrome’s managed storage.
 
-- No external servers are contacted.
+- Logs are stored locally in chrome.storage.local and only viewable with the admin password.
+
+- No external servers are contacted unless configured by the admin (e.g., custom redirect/support URL).
 
 - No remote code is executed.
 
 
 ---
 
-## 📜 License
+📜 License
 
 
 MIT License — feel free to use, modify, and deploy in your own environment.
-
-
----
-✅ This README is clear for IT admins, compliant for Chrome Web Store, and friendly for GitHub.
