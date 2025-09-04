@@ -1,23 +1,35 @@
 function updateRules() {
-  chrome.storage.managed.get("blocktypes", (data) => {
+  chrome.storage.managed.get(["blocktypes", "redirectUrl"], (data) => {
     const blocktypes = data.blocktypes || [];
-    const rules = blocktypes.map((ext, i) => ({
-      id: i + 1,
-      priority: 1,
-      action: { type: "block" },
-      condition: {
-        urlFilter: `*.${ext}`,
-        resourceTypes: ["main_frame"]
-      }
-    }));
+    const redirectUrl =
+      data.redirectUrl || chrome.runtime.getURL("blocked.html");
+
+    let ruleId = 1;
+    const rules = [];
+
+    // Block rules for local file:// URLs only
+    for (const ext of blocktypes) {
+      rules.push({
+        id: ruleId++,
+        priority: 1,
+        action: {
+          type: redirectUrl ? "redirect" : "block",
+          redirect: redirectUrl ? { url: redirectUrl } : undefined
+        },
+        condition: {
+          urlFilter: `|file:///*.${ext}`, // only local files
+          resourceTypes: ["main_frame"]
+        }
+      });
+    }
 
     chrome.declarativeNetRequest.updateDynamicRules(
       {
-        removeRuleIds: rules.map((r) => r.id),
+        removeRuleIds: Array.from({ length: ruleId }, (_, i) => i + 1),
         addRules: rules
       },
       () => {
-        console.log("Updated block rules:", rules);
+        console.log("Updated local file block rules:", rules);
       }
     );
   });

@@ -2,12 +2,25 @@
   "type": "object",
   "properties": {
     "blocktypes": {
-      "title": "Blocked File Types",
-      "description": "List of file extensions to block (e.g. html, js, pdf).",
+      "title": "Managed Files",
+      "description": "List of local file extensions to block (e.g. html, js, pdf).",
       "type": "array",
-      "items": {
-        "type": "string"
-      }
+      "items": { "type": "string" }
+    },
+    "redirectUrl": {
+      "title": "Redirect URL",
+      "description": "Optional URL to redirect blocked local file requests to.",
+      "type": "string"
+    },
+    "supportUrl": {
+      "title": "IT Support URL",
+      "description": "URL to open when the user clicks 'Contact IT Support'.",
+      "type": "string"
+    },
+    "logsPassword": {
+      "title": "Logs Password",
+      "description": "Password required to view logs in the extension.",
+      "type": "string"
     }
   }
 }

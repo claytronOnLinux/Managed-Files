@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Blocked File Logs</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Roboto, sans-serif;
+        margin: 1rem;
+        background: #f9fafb;
+      }
+      h1 {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+      th,
+      td {
+        padding: 0.6rem;
+        border-bottom: 1px solid #eee;
+        text-align: left;
+        font-size: 0.9rem;
+      }
+      th {
+        background: #f0f0f0;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      button {
+        margin-top: 1rem;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 6px;
+        background: #4a90e2;
+        color: white;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #357ab8;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Blocked File Logs</h1>
+    <table id="logsTable">
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>File Type</th>
+          <th>File URL</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <button id="downloadBtn">Download JSON</button>
+    <script src="logs.js"></script>
+  </body>
+</html>
