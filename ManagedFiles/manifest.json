@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Managed Files",
-  "version": "1.2",
+  "version": "1.1",
   "description": "Blocks specified local file types from opening in Chrome (managed by policy).",
   "permissions": ["declarativeNetRequest", "storage"],
   "background": {
@@ -25,4 +25,5 @@
       "matches": ["<all_urls>"]
     }
   ]
+
 }
