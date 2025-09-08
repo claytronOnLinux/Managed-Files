@@ -1,136 +1,81 @@
-Managed Files (Chrome Extension)
+# Managed Files: Securely Block Local File Access
 
-📌 Overview
+**A lightweight, policy-driven Chrome extension to prevent users from opening specific local file types (e.g., `.html`, `.js`, `.pdf`) in the browser.**
 
+Managed Files is designed for enterprise and school environments where administrators need to control access to local files for security and compliance. Configuration is managed centrally via the Google Admin Console, allowing you to enforce policies across your entire organization seamlessly.
 
-Managed Files is a lightweight Chrome extension that prevents users from opening specific local file types (e.g., .html, .js, .pdf) directly in the browser via file:// URLs.
-
-This extension is designed for enterprise and school environments where administrators need to restrict access to certain file types for security, compliance, or policy reasons.
-
-Configuration is managed centrally via the Google Admin Console using JSON policies.
-
-👉 Install the Chrome extension here!
-
+[Install from the Chrome Web Store](https://chrome.google.com/webstore/category/extensions) <!--- Replace with your actual store link -->
 
 ---
 
-✨ Features
+## ✨ Why Use Managed Files?
 
-- 🔒 Policy‑driven — Admins define blocked file types via Chrome Enterprise policies.
-
-- ⚡ Lightweight — Minimal code, no external dependencies, no performance impact.
-
-- 🛡️ Secure — No data collection, no remote code, no external communication.
-
-- 🏫 Enterprise‑ready — Can be force‑installed and locked down via Google Admin Console.
-
-- ✅ Safe for websites — Only blocks file:// navigations, does not block JavaScript or resources loaded by websites.
-
-- 🖥️ Custom Block Page — Friendly, modern UI with optional redirect to an admin‑defined URL.
-
-- 📞 Popup Menu — Toolbar button with a configurable “Contact IT Support” link.
-
-- 📑 Password‑Protected Logs — Admins can review blocked attempts (file type, path, timestamp) after entering a configured password.
-
-- 📥 Export Logs — IT can download logs as JSON for troubleshooting or compliance.
-
+*   🔒 **Enhance Security:** Prevent users from opening potentially malicious local files (like `.html` or `.js`) that could execute scripts or compromise security.
+*   🏢 **Centralized Management:** Configure and deploy blocking rules for your entire organization using Google Admin Console policies. No client-side setup is needed.
+*   🛡️ **Lightweight & Secure:** No external dependencies, no data collection, and no performance impact. The extension is built to be simple, fast, and secure.
+*   🏫 **Enterprise-Ready:** Force-install the extension and lock down configurations for all users in your domain.
+*   ✅ **Website Safe:** The extension only blocks `file://` navigations and does not interfere with websites or the resources they load.
+*   🖥️ **Customizable Block Page:** Provide a user-friendly, modern block page that can be customized to redirect to an internal IT or helpdesk page.
+*   📞 **IT Support Link:** The toolbar popup includes a configurable "Contact IT Support" link for users who need assistance.
+*   📑 **Password-Protected Logs:** Administrators can review blocked file attempts (including file type, path, and timestamp) by entering a configured password. Logs can be exported for auditing.
 
 ---
 
-📂 File Structure
+## ⚙️ For System Administrators: Configuration
 
-	managed-files/
-	  ├── manifest.json    # Extension manifest (v3)
-	  ├── background.js    # Service worker that applies blocking rules
-	  ├── schema.json      # Policy schema for Admin Console
-	  ├── popup.html       # Toolbar popup UI
-	  ├── popup.js         # Popup logic (support + logs access)
-	  ├── blocked.html     # Friendly block page
-	  ├── logs.html        # Admin log viewer
-	  ├── logs.js          # Logic for displaying/exporting logs
-	  ├── icon128.png      # Extension icon
-	  └── README.md        # This file
+Configuration is handled via a JSON policy uploaded in the Google Admin Console.
 
+1.  **Install the Extension:** Add the extension to your organization from the Chrome Web Store.
+2.  **Configure Policy:** In the Google Admin Console, navigate to **Devices → Chrome → Apps & Extensions**. Find the "Managed Files" extension and add your JSON configuration under **Policy for extensions**.
 
----
+**Example Policy:**
 
-⚙️ Configuration (Admin Console)
+```json
+{
+  "blocktypes": ["html", "js", "pdf", "vbs"],
+  "redirectUrl": "https://intranet.company.com/file-blocked-info",
+  "supportUrl": "https://helpdesk.company.com/new-ticket",
+  "logsPassword": "YourSecurePasswordHere",
+  "disableBlocking": false
+}
+```
 
-1. Upload or publish the extension (private or internal).
+**Policy Fields:**
 
-2. In Google Admin Console → Devices → Chrome → Apps & Extensions, add the extension by ID.
-
-3. Under Policy for extensions, provide JSON configuration.
-
-Example Policy
-
-	{
-	  "blocktypes": ["html", "js", "pdf"],
-	  "redirectUrl": "https://intranet.company.com/blocked",
-	  "supportUrl": "https://helpdesk.company.com/ticket",
-	  "logsPassword": "SuperSecret123",
-	  "disableBlocking": false
-	}
-
-
-- blocktypes → List of file extensions to block (file:// only).
-
-- redirectUrl → Optional URL to redirect blocked attempts (defaults to local blocked.html).
-
-- supportUrl → URL opened when the user clicks “Contact IT Support” in the popup.
-
-- logsPassword → Password required to view logs in the extension.
-
-- disableBlocking → Set to `true` to disable all file blocking by the extension.
-
+*   `blocktypes`: A list of file extensions to block (e.g., `"html"`, `"js"`).
+*   `redirectUrl`: (Optional) A URL to redirect users to when a file is blocked. If empty, a local block page is shown.
+*   `supportUrl`: The URL for the "Contact IT Support" link in the extension's popup.
+*   `logsPassword`: A password to protect access to the logs of blocked files.
+*   `disableBlocking`: Set to `true` to temporarily disable all file blocking.
 
 ---
 
-🔧 Development & Testing
+## 🔧 Development & Testing
 
-Load Unpacked
+If you wish to test the extension locally before deploying:
 
-1. Open Chrome and go to chrome://extensions/.
-
-2. Enable Developer mode.
-
-3. Click Load unpacked and select the managed-files/ folder.
-
-4. Enable “Allow access to file URLs” in the extension settings.
-
-5. Test by opening a local .html or .js file in Chrome — it should be blocked.
-
-Simulating Admin Policy Locally
-
-- Place a JSON file named after your extension ID in Chrome’s managed policy folder (varies by OS).
-
-- Example (Windows):
-
-	C:\Program Files\Google\Chrome\Policies\Managed\ibikmgedadoagbbjdgfapgogkkikggka.json
-
-
-
-- Restart Chrome and check chrome://policy to confirm it loaded.
-
+1.  **Load Unpacked:**
+    *   Open Chrome and go to `chrome://extensions/`.
+    *   Enable **Developer mode**.
+    *   Click **Load unpacked** and select the `ManagedFiles/` folder.
+    *   Enable **"Allow access to file URLs"** in the extension's settings.
+2.  **Simulate Admin Policy:**
+    *   Create a JSON file named after your extension's ID (e.g., `ibikmgedadoagbbjdgfapgogkkikggka.json`).
+    *   Place this file in Chrome’s managed policy folder (location varies by OS).
+    *   Restart Chrome and check `chrome://policy` to confirm the policy has been loaded.
 
 ---
 
-🔒 Privacy & Data Usage
+## 🔒 Privacy & Data
 
-- This extension does not collect, store, or transmit any personal data externally.
+This extension is built with privacy and security as a top priority:
 
-- All configuration is handled locally via Chrome’s managed storage.
-
-- Logs are stored locally in chrome.storage.local and only viewable with the admin password.
-
-- No external servers are contacted unless configured by the admin (e.g., custom redirect/support URL).
-
-- No remote code is executed.
-
+*   **No Data Collection:** It does not collect, store, or transmit any personal data.
+*   **Local Storage:** All configuration and logs are stored locally on the user's machine using Chrome's storage APIs.
+*   **No External Communication:** The extension does not contact any external servers unless a `redirectUrl` or `supportUrl` is configured by an administrator.
 
 ---
 
-📜 License
+## 📜 License
 
-
-MIT License — feel free to use, modify, and deploy in your own environment.
+This project is open-source and licensed under the MIT License. You are free to use, modify, and deploy it in your own environment.
