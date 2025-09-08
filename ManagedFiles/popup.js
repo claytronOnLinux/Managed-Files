@@ -1,7 +1,8 @@
 let clickCount = 0;
 let clickTimer = null;
 
-document.getElementById("title").addEventListener("click", () => {
+document.getElementById("title").addEventListener("mousedown", (event) => {
+  event.preventDefault(); // Prevents focus changes and text selection
   clickCount++;
   if (clickTimer) {
     clearTimeout(clickTimer);
