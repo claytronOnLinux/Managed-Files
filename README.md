@@ -10,9 +10,9 @@ Managed Files is designed for enterprise and school environments where administr
 
 ## ✨ Why Use Managed Files?
 
-*   <img src="./ManagedFiles/check.svg" alt="Check Icon" width="20" height="20"> **Enhance Security:** Prevent users from opening potentially malicious local files (like `.html` or `.js`) that could execute scripts or compromise security.
-*   <img src="./ManagedFiles/settings.svg" alt="Settings Icon" width="20" height="20"> **Centralized Management:** Configure and deploy blocking rules for your entire organization using Google Admin Console policies. No client-side setup is needed.
-*   <img src="./ManagedFiles/info-circle.svg" alt="Info Icon" width="20" height="20"> **Lightweight & Secure:** No external dependencies, no data collection, and no performance impact. The extension is built to be simple, fast, and secure.
+*   <img src="./assets/check.svg" alt="Check Icon" width="20" height="20"> **Enhance Security:** Prevent users from opening potentially malicious local files (like `.html` or `.js`) that could execute scripts or compromise security.
+*   <img src="./assets/settings.svg" alt="Settings Icon" width="20" height="20"> **Centralized Management:** Configure and deploy blocking rules for your entire organization using Google Admin Console policies. No client-side setup is needed.
+*   <img src="./assets/info-circle.svg" alt="Info Icon" width="20" height="20"> **Lightweight & Secure:** No external dependencies, no data collection, and no performance impact. The extension is built to be simple, fast, and secure.
 *   🏫 **Enterprise-Ready:** Force-install the extension and lock down configurations for all users in your domain.
 *   ✅ **Website Safe:** The extension only blocks `file://` navigations and does not interfere with websites or the resources they load.
 *   🖥️ **Customizable Block Page:** Provide a user-friendly, modern block page that can be customized to redirect to an internal IT or helpdesk page.
