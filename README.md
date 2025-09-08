@@ -4,15 +4,15 @@
 
 Managed Files is designed for enterprise and school environments where administrators need to control access to local files for security and compliance. Configuration is managed centrally via the Google Admin Console, allowing you to enforce policies across your entire organization seamlessly.
 
-[Install from the Chrome Web Store](https://chrome.google.com/webstore/category/extensions) <!--- Replace with your actual store link -->
+[Install from the Chrome Web Store](https://chromewebstore.google.com/detail/managed-files/bfbdggpicmioahjkhbcjcbakjohjongi)
 
 ---
 
 ## ✨ Why Use Managed Files?
 
-*   🔒 **Enhance Security:** Prevent users from opening potentially malicious local files (like `.html` or `.js`) that could execute scripts or compromise security.
-*   🏢 **Centralized Management:** Configure and deploy blocking rules for your entire organization using Google Admin Console policies. No client-side setup is needed.
-*   🛡️ **Lightweight & Secure:** No external dependencies, no data collection, and no performance impact. The extension is built to be simple, fast, and secure.
+*   <img src="./ManagedFiles/check.svg" alt="Check Icon" width="20" height="20"> **Enhance Security:** Prevent users from opening potentially malicious local files (like `.html` or `.js`) that could execute scripts or compromise security.
+*   <img src="./ManagedFiles/settings.svg" alt="Settings Icon" width="20" height="20"> **Centralized Management:** Configure and deploy blocking rules for your entire organization using Google Admin Console policies. No client-side setup is needed.
+*   <img src="./ManagedFiles/info-circle.svg" alt="Info Icon" width="20" height="20"> **Lightweight & Secure:** No external dependencies, no data collection, and no performance impact. The extension is built to be simple, fast, and secure.
 *   🏫 **Enterprise-Ready:** Force-install the extension and lock down configurations for all users in your domain.
 *   ✅ **Website Safe:** The extension only blocks `file://` navigations and does not interfere with websites or the resources they load.
 *   🖥️ **Customizable Block Page:** Provide a user-friendly, modern block page that can be customized to redirect to an internal IT or helpdesk page.
@@ -25,8 +25,14 @@ Managed Files is designed for enterprise and school environments where administr
 
 Configuration is handled via a JSON policy uploaded in the Google Admin Console.
 
-1.  **Install the Extension:** Add the extension to your organization from the Chrome Web Store.
-2.  **Configure Policy:** In the Google Admin Console, navigate to **Devices → Chrome → Apps & Extensions**. Find the "Managed Files" extension and add your JSON configuration under **Policy for extensions**.
+1.  **Install the Extension:**
+    *   Navigate to the Google Admin Console: **Devices → Chrome → Apps & Extensions → Users & Browsers**.
+    *   Select the Organizational Unit (OU) or Group you want to configure.
+    *   Click the **Add from Chrome Web Store** icon (a yellow circle with a plus sign).
+    *   Search for the extension using its ID: `bfbdggpicmioahjkhbcjcbakjohjongi`.
+    *   Select the extension and set the installation policy to **Force-install**.
+
+2.  **Configure Policy:** Once installed, click the extension in the list. A panel will open on the right. Add your JSON configuration under **Policy for extensions**.
 
 **Example Policy:**
 
