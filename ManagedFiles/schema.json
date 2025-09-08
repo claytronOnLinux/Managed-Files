@@ -21,6 +21,12 @@
       "title": "Logs Password",
       "description": "Password required to view logs in the extension.",
       "type": "string"
+    },
+    "disableBlocking": {
+      "title": "Disable Blocking",
+      "description": "Set to true to disable all file blocking by the extension.",
+      "type": "boolean",
+      "default": false
     }
   }
 }

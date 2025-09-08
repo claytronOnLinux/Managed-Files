@@ -68,7 +68,8 @@ Example Policy
 	  "blocktypes": ["html", "js", "pdf"],
 	  "redirectUrl": "https://intranet.company.com/blocked",
 	  "supportUrl": "https://helpdesk.company.com/ticket",
-	  "logsPassword": "SuperSecret123"
+	  "logsPassword": "SuperSecret123",
+	  "disableBlocking": false
 	}
 
 
@@ -79,6 +80,8 @@ Example Policy
 - supportUrl → URL opened when the user clicks “Contact IT Support” in the popup.
 
 - logsPassword → Password required to view logs in the extension.
+
+- disableBlocking → Set to `true` to disable all file blocking by the extension.
 
 
 ---
