@@ -76,3 +76,11 @@ chrome.storage.onChanged.addListener((changes, area) => {
     logAction("policy_changed", { changes: changes });
   }
 });
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.type === "logAction") {
+    logAction(request.action, request.details);
+    sendResponse({ status: "logged" });
+  }
+  return true; // Keep the message channel open for the asynchronous response
+});

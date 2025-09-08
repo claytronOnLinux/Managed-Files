@@ -1,48 +1,49 @@
-const LOG_RETENTION_DAYS = 7;
+let clickCount = 0;
+let clickTimer = null;
 
-async function logAction(action, details = {}) {
-  const now = Date.now();
-  const logEntry = { timestamp: now, action, ...details };
+document.getElementById("title").addEventListener("click", () => {
+  clickCount++;
+  if (clickTimer) {
+    clearTimeout(clickTimer);
+  }
+  clickTimer = setTimeout(() => {
+    clickCount = 0;
+  }, 2000); // Reset after 2 seconds of inactivity
 
-  const data = await chrome.storage.local.get("extensionLogs");
-  let logs = data.extensionLogs || [];
-
-  logs.push(logEntry);
-
-  const sevenDaysAgo = now - LOG_RETENTION_DAYS * 24 * 60 * 60 * 1000;
-  logs = logs.filter(entry => entry.timestamp >= sevenDaysAgo);
-
-  await chrome.storage.local.set({ extensionLogs: logs });
-}
-
-document.getElementById("supportBtn").addEventListener("click", async () => {
-  await logAction("support_button_clicked");
-  chrome.storage.managed.get("supportUrl", (data) => {
-    const url = data.supportUrl;
-    if (url) {
-      chrome.tabs.create({ url });
-    } else {
-      alert("IT Support URL is not configured by your administrator.");
-    }
-  });
+  if (clickCount === 5) {
+    clickCount = 0;
+    clearTimeout(clickTimer);
+    showLogs();
+  }
 });
 
-document.getElementById("logsBtn").addEventListener("click", async () => {
-  await logAction("view_logs_button_clicked");
+function showLogs() {
+  chrome.runtime.sendMessage({ type: "logAction", action: "view_logs_button_clicked" });
   chrome.storage.managed.get("logsPassword", (data) => {
     const correctPassword = data.logsPassword;
     if (!correctPassword) {
-      alert("Logs are not enabled by your administrator.");
+      // Silently fail if logs are not enabled, as this is a hidden feature.
       return;
     }
 
     const entered = prompt("Enter admin password to view logs:");
     if (entered === correctPassword) {
       chrome.tabs.create({ url: chrome.runtime.getURL("logs.html") });
-      logAction("logs_viewed_successfully");
+      chrome.runtime.sendMessage({ type: "logAction", action: "logs_viewed_successfully" });
+    } else if (entered) { // Only log failed attempt if a password was entered
+      chrome.runtime.sendMessage({ type: "logAction", action: "logs_view_failed", details: { reason: "incorrect_password" } });
+    }
+  });
+}
+
+document.getElementById("supportBtn").addEventListener("click", () => {
+  chrome.runtime.sendMessage({ type: "logAction", action: "support_button_clicked" });
+  chrome.storage.managed.get("supportUrl", (data) => {
+    const url = data.supportUrl;
+    if (url) {
+      chrome.tabs.create({ url });
     } else {
-      alert("Incorrect password.");
-      logAction("logs_view_failed", { reason: "incorrect_password" });
+      alert("IT Support URL is not configured by your administrator.");
     }
   });
 });

@@ -1,20 +1,3 @@
-const LOG_RETENTION_DAYS = 7;
-
-async function logAction(action, details = {}) {
-  const now = Date.now();
-  const logEntry = { timestamp: now, action, ...details };
-
-  const data = await chrome.storage.local.get("extensionLogs");
-  let logs = data.extensionLogs || [];
-
-  logs.push(logEntry);
-
-  const sevenDaysAgo = now - LOG_RETENTION_DAYS * 24 * 60 * 60 * 1000;
-  logs = logs.filter(entry => entry.timestamp >= sevenDaysAgo);
-
-  await chrome.storage.local.set({ extensionLogs: logs });
-}
-
 function renderLogs(logs) {
   const tbody = document.querySelector("#logsTable tbody");
   tbody.innerHTML = "";
@@ -35,8 +18,8 @@ chrome.storage.local.get("extensionLogs", (data) => {
   renderLogs(logs);
 });
 
-document.getElementById("downloadBtn").addEventListener("click", async () => {
-  await logAction("logs_downloaded");
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  chrome.runtime.sendMessage({ type: "logAction", action: "logs_downloaded" });
   chrome.storage.local.get("extensionLogs", (data) => {
     const logs = data.extensionLogs || [];
     const blob = new Blob([JSON.stringify(logs, null, 2)], {

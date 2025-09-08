@@ -56,6 +56,18 @@ Configuration is handled via a JSON policy uploaded in the Google Admin Console.
 
 ---
 
+## 🕵️ Administrator Features
+
+### Hidden Log Access
+
+To ensure a clean user interface and prevent confusion, the "View Logs" button is hidden by default. Administrators can access the logs on any machine by following these steps:
+
+1.  Click the extension icon in the Chrome toolbar to open the popup.
+2.  Click the **"Managed Files"** title at the top of the popup **5 times in a row**.
+3.  A password prompt will appear. Enter the `logsPassword` configured in your policy to view the logs.
+
+---
+
 ## 🔧 Development & Testing
 
 If you wish to test the extension locally before deploying:
