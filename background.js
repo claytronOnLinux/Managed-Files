@@ -1,86 +1,77 @@
-const LOG_RETENTION_DAYS = 7;
-
-async function logAction(action, details = {}) {
-  const now = Date.now();
-  const logEntry = { timestamp: now, action, ...details };
-
-  const data = await chrome.storage.local.get("extensionLogs");
-  let logs = data.extensionLogs || [];
-
-  // Add new log entry
-  logs.push(logEntry);
-
-  // Prune old logs (older than LOG_RETENTION_DAYS)
-  const sevenDaysAgo = now - LOG_RETENTION_DAYS * 24 * 60 * 60 * 1000;
-  logs = logs.filter(entry => entry.timestamp >= sevenDaysAgo);
-
-  await chrome.storage.local.set({ extensionLogs: logs });
-}
-
 function updateRules() {
-  chrome.storage.managed.get(["blocktypes", "redirectUrl", "disableBlocking"], async (data) => {
+  chrome.storage.managed.get(["blocktypes", "redirectUrl"], (data) => {
+    // Default to an empty array if blocktypes isn't set
     const blocktypes = data.blocktypes || [];
+    // Use the custom redirect URL or fall back to the bundled blocked.html
     const redirectUrl =
       data.redirectUrl || chrome.runtime.getURL("blocked.html");
-    const disableBlocking = data.disableBlocking || false;
 
     let ruleId = 1;
     const rules = [];
 
-    if (!disableBlocking) {
-      for (const ext of blocktypes) {
-        rules.push({
-          id: ruleId++,
-          priority: 1,
-          action: {
-            type: redirectUrl ? "redirect" : "block",
-            redirect: redirectUrl ? { url: redirectUrl } : undefined
-          },
-          condition: {
-            urlFilter: `file://*/*.${ext}`, // only local files
-            resourceTypes: ["main_frame"]
-          }
-        });
-      }
-      await logAction("rules_updated", { status: "blocking_enabled", blocktypes: blocktypes });
-    } else {
-      await logAction("rules_updated", { status: "blocking_disabled" });
+    // Create a rule for each file extension from the managed policy
+    for (const ext of blocktypes) {
+      rules.push({
+        id: ruleId++,
+        priority: 1,
+        action: {
+          // If a redirectUrl is provided (even an empty string from policy
+          // could mean "use default"), we redirect. Otherwise, we block.
+          // Note: an empty redirectUrl in policy will use the default.
+          type: "redirect",
+          redirect: { url: redirectUrl },
+        },
+        // --- THIS IS THE CORRECTED PART ---
+        condition: {
+          // Simpler filter that just matches the end of the URL path
+          urlFilter: `*/*.${ext}`,
+          // Explicitly apply this rule ONLY to local file URLs
+          schemes: ["file"],
+          resourceTypes: ["main_frame"],
+        },
+      });
     }
 
-    chrome.declarativeNetRequest.updateDynamicRules(
-      {
-        removeRuleIds: Array.from({ length: ruleId }, (_, i) => i + 1),
-        addRules: rules
-      },
-      () => {
-        // Removed console.log("Updated local file block rules:", rules);
-      }
-    );
+    // Get all existing rule IDs to remove them before adding new ones
+    chrome.declarativeNetRequest.getDynamicRules((existingRules) => {
+      const removeRuleIds = existingRules.map((rule) => rule.id);
+
+      chrome.declarativeNetRequest.updateDynamicRules(
+        {
+          removeRuleIds: removeRuleIds,
+          addRules: rules,
+        },
+        () => {
+          if (chrome.runtime.lastError) {
+            console.error(
+              "Error updating rules:",
+              chrome.runtime.lastError.message,
+            );
+          } else {
+            console.log("Updated local file block rules. New rules:", rules);
+          }
+        },
+      );
+    });
   });
 }
 
-// Run once on startup
-chrome.runtime.onInstalled.addListener(() => {
-  updateRules();
-  logAction("extension_installed_or_updated");
-});
-chrome.runtime.onStartup.addListener(() => {
-  updateRules();
-  logAction("extension_startup");
-});
+// Initial setup when the extension is installed or updated
+chrome.runtime.onInstalled.addListener(updateRules);
 
-// Re-apply if policy changes
+// Run when the browser starts (but not the extension, onInstalled is better)
+// chrome.runtime.onStartup.addListener(updateRules); // This is often redundant
+
+// Listen for changes in managed storage and update rules dynamically
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === "managed" && (changes.blocktypes || changes.disableBlocking)) {
+  if (
+    area === "managed" &&
+    (changes.blocktypes || changes.redirectUrl)
+  ) {
+    console.log("Policy has changed, updating rules...");
     updateRules();
-    logAction("policy_changed", { changes: changes });
   }
 });
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.type === "logAction") {
-    logAction(request.action, request.details);
-    sendResponse({ status: "logged" });
-  }
-  return true; // Keep the message channel open for the asynchronous response
-});
+// A small improvement: Run updateRules on first launch as well
+updateRules();
