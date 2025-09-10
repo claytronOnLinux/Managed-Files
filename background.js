@@ -1,56 +1,76 @@
 function updateRules() {
   chrome.storage.managed.get(["blocktypes", "redirectUrl"], (data) => {
-    // Default to an empty array if blocktypes isn't set
-    const blocktypes = data.blocktypes || [];
-    // Use the custom redirect URL or fall back to the bundled blocked.html
+    const blocktypes = Array.isArray(data.blocktypes) ? data.blocktypes : [];
+
+    // If redirectUrl is present in policy (even empty), we will redirect.
+    // Empty string falls back to bundled blocked.html.
+    const redirectConfigured = Object.prototype.hasOwnProperty.call(
+      data,
+      "redirectUrl"
+    );
+    const fallbackBlocked =
+      chrome.runtime.getURL("blocked.html") || "about:blank";
     const redirectUrl =
-      data.redirectUrl || chrome.runtime.getURL("blocked.html");
+      redirectConfigured && data.redirectUrl
+        ? data.redirectUrl
+        : fallbackBlocked;
 
     let ruleId = 1;
     const rules = [];
 
-    // Create a rule for each file extension from the managed policy
-    for (const ext of blocktypes) {
+    const special = /[.*+?^${}()|[\]\\]/g;
+    const toCaseInsensitiveExt = (ext) => {
+      let out = "";
+      for (const ch of String(ext)) {
+        if (/[a-z]/i.test(ch)) {
+          out += `[${ch.toLowerCase()}${ch.toUpperCase()}]`;
+        } else {
+          out += ch.replace(special, "\\$&");
+        }
+      }
+      return out;
+    };
+
+    for (const raw of blocktypes) {
+      if (!raw) continue;
+      const cleaned = String(raw).trim().replace(/^\./, "");
+      if (!cleaned) continue;
+
+      const ciExt = toCaseInsensitiveExt(cleaned);
+      // Match file://...<anything>.<ext> followed by end, ? or #
+      const regex = `^file://.*\\.${ciExt}(?:[?#]|$)`;
+
       rules.push({
         id: ruleId++,
         priority: 1,
-        action: {
-          // If a redirectUrl is provided (even an empty string from policy
-          // could mean "use default"), we redirect. Otherwise, we block.
-          // Note: an empty redirectUrl in policy will use the default.
-          type: "redirect",
-          redirect: { url: redirectUrl },
-        },
-        // --- THIS IS THE CORRECTED PART ---
+        action: redirectConfigured
+          ? { type: "redirect", redirect: { url: redirectUrl } }
+          : { type: "block" },
         condition: {
-          // Simpler filter that just matches the end of the URL path
-          urlFilter: `*/*.${ext}`,
-          // Explicitly apply this rule ONLY to local file URLs
-          schemes: ["file"],
+          regexFilter: regex,
           resourceTypes: ["main_frame"],
         },
       });
     }
 
-    // Get all existing rule IDs to remove them before adding new ones
     chrome.declarativeNetRequest.getDynamicRules((existingRules) => {
-      const removeRuleIds = existingRules.map((rule) => rule.id);
+      const removeRuleIds = existingRules.map((r) => r.id);
 
       chrome.declarativeNetRequest.updateDynamicRules(
-        {
-          removeRuleIds: removeRuleIds,
-          addRules: rules,
-        },
+        { removeRuleIds, addRules: rules },
         () => {
           if (chrome.runtime.lastError) {
             console.error(
               "Error updating rules:",
-              chrome.runtime.lastError.message,
+              chrome.runtime.lastError.message
             );
           } else {
-            console.log("Updated local file block rules. New rules:", rules);
+            console.log(
+              "Updated local file block rules. New rules:",
+              JSON.stringify(rules, null, 2)
+            );
           }
-        },
+        }
       );
     });
   });
@@ -59,19 +79,37 @@ function updateRules() {
 // Initial setup when the extension is installed or updated
 chrome.runtime.onInstalled.addListener(updateRules);
 
-// Run when the browser starts (but not the extension, onInstalled is better)
-// chrome.runtime.onStartup.addListener(updateRules); // This is often redundant
-
 // Listen for changes in managed storage and update rules dynamically
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (
-    area === "managed" &&
-    (changes.blocktypes || changes.redirectUrl)
-  ) {
+  if (area === "managed" && (changes.blocktypes || changes.redirectUrl)) {
     console.log("Policy has changed, updating rules...");
     updateRules();
   }
 });
 
-// A small improvement: Run updateRules on first launch as well
+// Run updateRules on first launch as well
 updateRules();
+
+// Optional: debug and log matches (requires declarativeNetRequestFeedback)
+try {
+  chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((info) => {
+    const url = info.request?.url || "";
+    console.log("Matched rule:", info.rule.ruleId, "->", url);
+
+    // Append to local logs for logs.html
+    const ts = new Date().toISOString();
+    let type = "";
+    const m = url.match(/\.([^.\/?#]+)(?:[?#]|$)/);
+    if (m) type = m[1];
+
+    chrome.storage.local.get("blockedLogs", (data) => {
+      const logs = Array.isArray(data.blockedLogs) ? data.blockedLogs : [];
+      logs.unshift({ timestamp: ts, type, url });
+      // keep last 1000 entries
+      if (logs.length > 1000) logs.length = 1000;
+      chrome.storage.local.set({ blockedLogs: logs });
+    });
+  });
+} catch (e) {
+  // declarativeNetRequestFeedback may be missing
+}

@@ -1,20 +1,25 @@
 {
   "manifest_version": 3,
   "name": "Managed Files",
-  "version": "1.2",
+  "version": "1.1",
   "description": "Blocks specified local file types from opening in Chrome (managed by policy).",
-  "permissions": ["declarativeNetRequest", "storage"],
+  "permissions": [
+    "declarativeNetRequest",
+    "storage",
+    "declarativeNetRequestFeedback"
+  ],
+  "host_permissions": ["file:///*"],
   "background": {
     "service_worker": "background.js"
   },
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "128": "assets/icon128.ico"
+      "128": "icon128.ico"
     }
   },
   "icons": {
-    "128": "assets/icon128.ico"
+    "128": "icon128.ico"
   },
   "storage": {
     "managed_schema": "schema.json"
@@ -25,5 +30,4 @@
       "matches": ["<all_urls>"]
     }
   ]
-
 }
