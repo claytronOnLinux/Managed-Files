@@ -34,17 +34,29 @@ Configuration is handled via a JSON policy uploaded in the Google Admin Console.
 
 2.  **Configure Policy:** Once installed, click the extension in the list. A panel will open on the right. Add your JSON configuration under **Policy for extensions**.
 
-**Example Policy:**
+**Example Policy (Google Admin Console format):**
 
 ```json
 {
-  "blocktypes": ["html", "js", "pdf", "vbs"],
-  "redirectUrl": "https://intranet.company.com/file-blocked-info",
-  "supportUrl": "https://helpdesk.company.com/new-ticket",
-  "logsPassword": "YourSecurePasswordHere",
-  "disableBlocking": false
+  "blocktypes": {
+    "Value": ["html", "js", "pdf", "vbs"]
+  },
+  "redirectUrl": {
+    "Value": "https://intranet.company.com/file-blocked-info"
+  },
+  "supportUrl": {
+    "Value": "https://helpdesk.company.com/new-ticket"
+  },
+  "logsPassword": {
+    "Value": "YourSecurePasswordHere"
+  },
+  "disableBlocking": {
+    "Value": false
+  }
 }
 ```
+
+> **Important:** The Google Admin Console requires each policy value to be wrapped in a `{"Value": ...}` object. Using flat JSON (e.g., `"blocktypes": ["html"]`) will cause the policy to silently fail.
 
 **Policy Fields:**
 
@@ -71,25 +83,6 @@ To keep the UI clean for end users, log access is hidden behind a secret gesture
 Logs include the timestamp, blocked file type, and full `file://` path for each blocked attempt. You can download the full log as JSON or clear it from the logs page.
 
 > **Note:** Log recording requires the built-in block page (i.e., `redirectUrl` should be omitted or empty). When an external redirect URL is configured, the extension cannot capture blocked file details.
-
----
-
-## 🔧 Development & Testing
-
-If you wish to test the extension locally before deploying:
-
-1.  **Load Unpacked:**
-    *   Open Chrome and go to `chrome://extensions/`.
-    *   Enable **Developer mode**.
-    *   Click **Load unpacked** and select the project folder.
-    *   Enable **"Allow access to file URLs"** in the extension's settings.
-2.  **Simulate Admin Policy:**
-    *   Create a JSON file named after your extension's ID (e.g., `bfbdggpicmioahjkhbcjcbakjohjongi.json`).
-    *   Place this file in Chrome's managed policy folder:
-        *   **ChromeOS / Linux:** `/etc/opt/chrome/policies/managed/`
-        *   **macOS:** `~/Library/Application Support/Google/Chrome/Managed Preferences/`
-        *   **Windows:** Registry under `HKLM\SOFTWARE\Policies\Google\Chrome\3rdparty\extensions\<id>\policy`
-    *   Restart Chrome and check `chrome://policy` to confirm the policy has been loaded.
 
 ---
 

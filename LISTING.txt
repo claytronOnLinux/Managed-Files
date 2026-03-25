@@ -35,15 +35,27 @@ Configuration is handled entirely via a JSON policy in the Google Admin Console.
     - After installing, click on the extension in the list to open the configuration panel.
     - Under "Policy for extensions", enter your JSON configuration.
 
-Example Policy:
+Example Policy (Google Admin Console format):
 
 {
-  "blocktypes": ["html", "js", "pdf", "vbs"],
-  "redirectUrl": "https://intranet.company.com/file-blocked-info",
-  "supportUrl": "https://helpdesk.company.com/new-ticket",
-  "logsPassword": "YourSecurePasswordHere",
-  "disableBlocking": false
+  "blocktypes": {
+    "Value": ["html", "js", "pdf", "vbs"]
+  },
+  "redirectUrl": {
+    "Value": "https://intranet.company.com/file-blocked-info"
+  },
+  "supportUrl": {
+    "Value": "https://helpdesk.company.com/new-ticket"
+  },
+  "logsPassword": {
+    "Value": "YourSecurePasswordHere"
+  },
+  "disableBlocking": {
+    "Value": false
+  }
 }
+
+IMPORTANT: The Google Admin Console requires each policy value to be wrapped in a {"Value": ...} object. Using flat JSON (e.g., "blocktypes": ["html"]) will cause the policy to silently fail.
 
 Policy Fields:
 
