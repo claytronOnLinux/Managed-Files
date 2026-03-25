@@ -34,33 +34,65 @@
       tr:last-child td {
         border-bottom: none;
       }
-      button {
+      .actions {
         margin-top: 1rem;
+        display: flex;
+        gap: 0.5rem;
+      }
+      button {
         padding: 0.5rem 1rem;
         border: none;
         border-radius: 6px;
         background: #4a90e2;
         color: white;
         cursor: pointer;
+        font-size: 0.85rem;
       }
       button:hover {
         background: #357ab8;
       }
+      #clearBtn {
+        background: #e74c3c;
+      }
+      #clearBtn:hover {
+        background: #c0392b;
+      }
+
+      /* Auth gate */
+      #authGate {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 60vh;
+        color: #888;
+        font-size: 1rem;
+      }
+      #logsContent {
+        display: none;
+      }
     </style>
   </head>
   <body>
-    <h1>Blocked File Logs</h1>
-    <table id="logsTable">
-      <thead>
-        <tr>
-          <th>Timestamp</th>
-          <th>Action</th>
-          <th>Details</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <button id="downloadBtn">Download JSON</button>
+    <div id="authGate">Access denied. Please use the extension popup to view logs.</div>
+
+    <div id="logsContent">
+      <h1>Blocked File Logs</h1>
+      <table id="logsTable">
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Action</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div class="actions">
+        <button id="downloadBtn">Download JSON</button>
+        <button id="clearBtn">Clear Logs</button>
+      </div>
+    </div>
+
     <script src="logs.js"></script>
   </body>
 </html>

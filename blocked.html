@@ -19,7 +19,7 @@
         padding: 2rem 2.5rem;
         border-radius: 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        max-width: 420px;
+        max-width: 480px;
         text-align: center;
       }
       .icon {
@@ -36,6 +36,19 @@
         line-height: 1.5;
         color: #555;
       }
+      .file-info {
+        margin-top: 1rem;
+        padding: 0.75rem 1rem;
+        background: #f0f4f8;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        color: #444;
+        word-break: break-all;
+        text-align: left;
+      }
+      .file-info strong {
+        color: #333;
+      }
       .footer {
         margin-top: 1.5rem;
         font-size: 0.8rem;
@@ -48,10 +61,70 @@
       <div class="icon">📄</div>
       <h1>File Blocked</h1>
       <p>
-        This file type isn’t available to open in Chrome.<br />
+        This file type isn't available to open in Chrome.<br />
         If you think you need access, please contact your IT support team.
       </p>
+      <div class="file-info" id="fileInfo" style="display: none"></div>
       <div class="footer">Managed by your organization</div>
     </div>
+    <script>
+      (function () {
+        // Extract the blocked URL from the raw href to handle filenames
+        // containing '#' (which the browser treats as a fragment separator).
+        // location.href preserves everything including the fragment.
+        // Example redirect URL produced by declarativeNetRequest:
+        //   blocked.html?url=file:///home/user/notes#1.html
+        // location.href:
+        //   chrome-extension://id/blocked.html?url=file:///home/user/notes#1.html
+        // We parse from the raw string to recover the full original path.
+        var raw = location.href;
+        var marker = "?url=";
+        var idx = raw.indexOf(marker);
+        if (idx === -1) return;
+
+        var blockedUrl = raw.substring(idx + marker.length);
+        if (!blockedUrl) return;
+
+        // SECURITY: Only process file:// URLs. This prevents log poisoning
+        // if a website somehow navigates to this page with a crafted URL.
+        if (!blockedUrl.startsWith("file://")) return;
+
+        // Cap length to prevent abuse from extremely long paths
+        if (blockedUrl.length > 2048) {
+          blockedUrl = blockedUrl.substring(0, 2048);
+        }
+
+        // Extract file extension for display
+        var match = blockedUrl.match(/\.([a-zA-Z0-9]{1,12})(?:[?#].*)?$/);
+        var fileType = match ? match[1].toLowerCase() : "unknown";
+
+        // Show file info to the user
+        var infoEl = document.getElementById("fileInfo");
+
+        var typeNode = document.createElement("div");
+        var typeLabel = document.createElement("strong");
+        typeLabel.textContent = "Blocked type: ";
+        typeNode.appendChild(typeLabel);
+        typeNode.appendChild(document.createTextNode("." + fileType));
+        infoEl.appendChild(typeNode);
+
+        var pathNode = document.createElement("div");
+        pathNode.style.marginTop = "0.4rem";
+        var pathLabel = document.createElement("strong");
+        pathLabel.textContent = "Path: ";
+        pathNode.appendChild(pathLabel);
+        pathNode.appendChild(document.createTextNode(blockedUrl));
+        infoEl.appendChild(pathNode);
+
+        infoEl.style.display = "block";
+
+        // Log the blocked file event back to the service worker
+        chrome.runtime.sendMessage({
+          type: "logAction",
+          action: "file_blocked",
+          details: { url: blockedUrl, fileType: fileType },
+        });
+      })();
+    </script>
   </body>
 </html>

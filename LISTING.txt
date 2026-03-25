@@ -13,9 +13,9 @@ WHY USE MANAGED FILES?
 *   [ℹ️] Lightweight & Secure: No external dependencies, no data collection, and no performance impact. The extension is built to be simple, fast, and secure.
 *   Enterprise-Ready: Force-install the extension and lock down configurations for all users in your domain.
 *   Website Safe: The extension only blocks file:// navigations and does not interfere with websites or the resources they load.
-*   Customizable Block Page: Provide a user-friendly, modern block page that can be customized to redirect to an internal IT or helpdesk page.
+*   Customizable Block Page: A user-friendly block page shows the blocked file type and path. Administrators can optionally redirect to an internal helpdesk page instead.
 *   IT Support Link: The toolbar popup includes a configurable "Contact IT Support" link for users who need assistance.
-*   Password-Protected Logs: Administrators can review blocked file attempts (including file type, path, and timestamp) by entering a configured password. Logs can be exported for auditing.
+*   Password-Protected Logs: Administrators can review blocked file attempts (including file type, path, and timestamp) by entering a configured password. Logs can be exported as JSON for auditing.
 
 ---
 
@@ -48,10 +48,10 @@ Example Policy:
 Policy Fields:
 
 *   blocktypes: A list of file extensions to block (e.g., "html", "js").
-*   redirectUrl: (Optional) A URL to redirect users to when a file is blocked. If empty, a local block page is shown.
+*   redirectUrl: (Optional) A URL to redirect users to when a file is blocked. If empty or omitted, the built-in block page is shown (which displays the blocked file path and type).
 *   supportUrl: The URL for the "Contact IT Support" link in the extension's popup.
 *   logsPassword: A password to protect access to the logs of blocked files.
-*   disableBlocking: Set to true to temporarily disable all file blocking.
+*   disableBlocking: Set to true to temporarily disable all file blocking without removing the extension. Defaults to false.
 
 ---
 
@@ -67,4 +67,4 @@ This extension is built with privacy and security as a top priority:
 
 For more detailed information, development notes, or to view the source code, please visit our GitHub repository:
 
-https://github.com/C-Clayton/Managed-Files
+https://github.com/claytronOnLinux/Managed-Files

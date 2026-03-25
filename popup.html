@@ -34,12 +34,57 @@
       button:hover {
         background: #357ab8;
       }
+
+      #authSection {
+        display: none;
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid #ddd;
+      }
+      #authSection label {
+        display: block;
+        font-size: 0.8rem;
+        color: #555;
+        margin-bottom: 0.3rem;
+      }
+      #authSection input {
+        width: 100%;
+        padding: 0.45rem;
+        font-size: 0.85rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        margin-bottom: 0.4rem;
+      }
+      #authSection input:focus {
+        outline: none;
+        border-color: #4a90e2;
+      }
+      .notice {
+        display: none;
+        font-size: 0.75rem;
+        margin-bottom: 0.3rem;
+      }
+      #authError {
+        color: #e74c3c;
+      }
+      #supportNotice {
+        color: #888;
+      }
     </style>
   </head>
   <body>
     <h1 id="title">Managed Files</h1>
     <button id="supportBtn">Contact IT Support</button>
-    <!-- ✅ Only include once -->
+    <div id="supportNotice" class="notice">Support URL is not configured.</div>
+
+    <div id="authSection">
+      <label for="passwordInput">Admin password:</label>
+      <input type="password" id="passwordInput" placeholder="Enter password" />
+      <div id="authError" class="notice">Incorrect password.</div>
+      <button id="authSubmit">View Logs</button>
+    </div>
+
     <script src="popup.js"></script>
   </body>
 </html>

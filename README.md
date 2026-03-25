@@ -15,9 +15,9 @@ Managed Files is designed for enterprise and school environments where administr
 *   <img src="./assets/info-circle.svg" alt="Info Icon" width="20" height="20"> **Lightweight & Secure:** No external dependencies, no data collection, and no performance impact. The extension is built to be simple, fast, and secure.
 *   🏫 **Enterprise-Ready:** Force-install the extension and lock down configurations for all users in your domain.
 *   ✅ **Website Safe:** The extension only blocks `file://` navigations and does not interfere with websites or the resources they load.
-*   🖥️ **Customizable Block Page:** Provide a user-friendly, modern block page that can be customized to redirect to an internal IT or helpdesk page.
+*   🖥️ **Customizable Block Page:** A user-friendly block page shows the blocked file type and path. Administrators can optionally redirect to an internal helpdesk page instead.
 *   📞 **IT Support Link:** The toolbar popup includes a configurable "Contact IT Support" link for users who need assistance.
-*   📑 **Password-Protected Logs:** Administrators can review blocked file attempts (including file type, path, and timestamp) by entering a configured password. Logs can be exported for auditing.
+*   📑 **Password-Protected Logs:** Administrators can review blocked file attempts (including file type, path, and timestamp) by entering a configured password. Logs can be exported as JSON for auditing.
 
 ---
 
@@ -48,11 +48,13 @@ Configuration is handled via a JSON policy uploaded in the Google Admin Console.
 
 **Policy Fields:**
 
-*   `blocktypes`: A list of file extensions to block (e.g., `"html"`, `"js"`).
-*   `redirectUrl`: (Optional) A URL to redirect users to when a file is blocked. If empty, a local block page is shown.
-*   `supportUrl`: The URL for the "Contact IT Support" link in the extension's popup.
-*   `logsPassword`: A password to protect access to the logs of blocked files.
-*   `disableBlocking`: Set to `true` to temporarily disable all file blocking.
+| Field | Type | Description |
+|-------|------|-------------|
+| `blocktypes` | `string[]` | List of file extensions to block (e.g., `"html"`, `"js"`). |
+| `redirectUrl` | `string` | Optional URL to redirect users to when a file is blocked. If omitted or empty, the built-in block page is shown (which also displays the blocked file path and type). |
+| `supportUrl` | `string` | URL for the "Contact IT Support" link in the extension's popup. |
+| `logsPassword` | `string` | Password required to view the blocked file logs. |
+| `disableBlocking` | `boolean` | Set to `true` to temporarily disable all file blocking without removing the extension. Defaults to `false`. |
 
 ---
 
@@ -60,11 +62,15 @@ Configuration is handled via a JSON policy uploaded in the Google Admin Console.
 
 ### Hidden Log Access
 
-To ensure a clean user interface and prevent confusion, the "View Logs" button is hidden by default. Administrators can access the logs on any machine by following these steps:
+To keep the UI clean for end users, log access is hidden behind a secret gesture:
 
 1.  Click the extension icon in the Chrome toolbar to open the popup.
-2.  Click the **"Managed Files"** title at the top of the popup **5 times in a row**.
-3.  A password prompt will appear. Enter the `logsPassword` configured in your policy to view the logs.
+2.  Click the **"Managed Files"** title at the top of the popup **5 times within 2 seconds**.
+3.  Enter the `logsPassword` configured in your policy to view blocked file logs.
+
+Logs include the timestamp, blocked file type, and full `file://` path for each blocked attempt. You can download the full log as JSON or clear it from the logs page.
+
+> **Note:** Log recording requires the built-in block page (i.e., `redirectUrl` should be omitted or empty). When an external redirect URL is configured, the extension cannot capture blocked file details.
 
 ---
 
@@ -75,11 +81,14 @@ If you wish to test the extension locally before deploying:
 1.  **Load Unpacked:**
     *   Open Chrome and go to `chrome://extensions/`.
     *   Enable **Developer mode**.
-    *   Click **Load unpacked** and select the `ManagedFiles/` folder.
+    *   Click **Load unpacked** and select the project folder.
     *   Enable **"Allow access to file URLs"** in the extension's settings.
 2.  **Simulate Admin Policy:**
-    *   Create a JSON file named after your extension's ID (e.g., `ibikmgedadoagbbjdgfapgogkkikggka.json`).
-    *   Place this file in Chrome’s managed policy folder (location varies by OS).
+    *   Create a JSON file named after your extension's ID (e.g., `bfbdggpicmioahjkhbcjcbakjohjongi.json`).
+    *   Place this file in Chrome's managed policy folder:
+        *   **ChromeOS / Linux:** `/etc/opt/chrome/policies/managed/`
+        *   **macOS:** `~/Library/Application Support/Google/Chrome/Managed Preferences/`
+        *   **Windows:** Registry under `HKLM\SOFTWARE\Policies\Google\Chrome\3rdparty\extensions\<id>\policy`
     *   Restart Chrome and check `chrome://policy` to confirm the policy has been loaded.
 
 ---
