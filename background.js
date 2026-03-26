@@ -174,20 +174,3 @@ chrome.storage.onChanged.addListener((changes, area) => {
 // Also run on service worker startup (covers browser restart, extension
 // update, and ChromeOS session restore).
 updateRules();
-
-// ── Debug-only rule match logging ───────────────────────────────────
-// This API is only available for unpacked extensions in developer mode.
-// In production (force-installed), it silently fails — logging is handled
-// by blocked.html sending messages back to this service worker instead.
-try {
-  chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((info) => {
-    console.log(
-      "DEBUG rule match:",
-      info.rule.ruleId,
-      "→",
-      info.request?.url || "(unknown)"
-    );
-  });
-} catch (_) {
-  // Expected in production — not an error.
-}
