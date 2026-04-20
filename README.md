@@ -14,10 +14,20 @@ Managed Files is designed for enterprise and school environments where administr
 *   <img src="./assets/settings.svg" alt="Settings Icon" width="20" height="20"> **Centralized Management:** Configure and deploy blocking rules for your entire organization using Google Admin Console policies. No client-side setup is needed.
 *   <img src="./assets/info-circle.svg" alt="Info Icon" width="20" height="20"> **Lightweight & Secure:** No external dependencies, no data collection, and no performance impact. The extension is built to be simple, fast, and secure.
 *   🏫 **Enterprise-Ready:** Force-install the extension and lock down configurations for all users in your domain.
-*   ✅ **Website Safe:** The extension only blocks `file://` navigations and does not interfere with websites or the resources they load.
+*   ✅ **Website Safe:** The extension only intercepts `file://` navigations and does not interfere with websites or the resources they load.
 *   🖥️ **Customizable Block Page:** A user-friendly block page shows the blocked file type and path. Administrators can optionally redirect to an internal helpdesk page instead.
 *   📞 **IT Support Link:** The toolbar popup includes a configurable "Contact IT Support" link for users who need assistance.
 *   📑 **Password-Protected Logs:** Administrators can review blocked file attempts (including file type, path, and timestamp) by entering a configured password. Logs can be exported as JSON for auditing.
+
+---
+
+## 🛠️ How It Works (v1.3+)
+
+As of v1.3, Managed Files uses the `webNavigation` API to observe top-level navigations to `file://` URLs and redirects them with `chrome.tabs.update` when a blocked file type is detected.
+
+Earlier versions used `declarativeNetRequest`, which on ChromeOS silently fails to match `file://` URLs unless the extension has "Allow access to file URLs" enabled — a setting that cannot be reliably granted via policy on managed ChromeOS devices. The `webNavigation` approach works on managed ChromeOS with nothing more than a standard force-install, and behaves identically on Chrome desktop.
+
+The trade-off: blocking happens a few milliseconds later in the navigation lifecycle. Users will briefly see the blank loading state before the tab swaps to the block page. For file types that don't auto-execute on load (`.html`, `.js`, `.pdf`, etc.), this is harmless.
 
 ---
 
@@ -62,7 +72,7 @@ Configuration is handled via a JSON policy uploaded in the Google Admin Console.
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `blocktypes` | `string[]` | List of file extensions to block (e.g., `"html"`, `"js"`). |
+| `blocktypes` | `string[]` | List of file extensions to block (e.g., `"html"`, `"js"`). Case-insensitive. |
 | `redirectUrl` | `string` | Optional URL to redirect users to when a file is blocked. If omitted or empty, the built-in block page is shown (which also displays the blocked file path and type). |
 | `supportUrl` | `string` | URL for the "Contact IT Support" link in the extension's popup. |
 | `logsPassword` | `string` | Password required to view the blocked file logs. |
